@@ -1,0 +1,37 @@
+***********
+PROC SELMAN
+***********
+***
+*** Busca con el codigo de clasificacion del equipo,
+*** el manual de mantenimiento mas cercano.
+*** Recibe wflagsel=.f.
+***
+store mtfic.codcat  to wcodcat,wcodman
+store len(wcodcat)  to wconcar
+store .t.           to wflagseek
+do while wconcar>0
+   store substr(wcodcat,wconcar,1) to wcar
+   if wcar="."
+      store substr(wcodcat,1,wconcar-1) to wcodman
+      store .t. to wflagseek
+   endif
+   if wflagseek
+      select mtcat
+      seek wcodman
+      if found()
+         if wflagman()
+            store "Manual encontrado: "+alltrim(mtcat.descat)+", correcto? (s/n)" to wtext
+            store "SN" TO WCH
+            do pregunta
+            if wch="S"
+               store .t. to wflagsel
+               exit
+            endif
+         endif
+      endif
+      store .f. to wflagseek
+   endif
+   store wconcar-1 to wconcar
+enddo
+select mtaxf
+return
